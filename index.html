@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二人プレイ ツイスターゲーム</title>
+    <title>反射神経ゲーム</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="game-container">
-        <h1 class="title">二人プレイ ツイスターゲーム</h1>
-        <div class="instruction" id="instruction">
-            スタートボタンを押してゲームを開始！
+        <div class="game-info">
+            <div class="score">スコア: <span id="score">0</span></div>
+            <div class="timer">残り時間: <span id="timer">30</span>秒</div>
         </div>
-        <div class="score">
-            プレイヤー1スコア: <span id="score1">0</span> | プレイヤー2スコア: <span id="score2">0</span>
+        <div id="game-area">
+            <div id="target"></div>
         </div>
-        <div class="controls">
-            <button class="btn" id="startBtn">ゲーム開始</button>
-            <button class="btn" id="resetBtn">リセット</button>
-        </div>
+        <button id="start-button">ゲームスタート</button>
     </div>
     <script src="main.js"></script>
 </body>

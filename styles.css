@@ -1,55 +1,66 @@
-body {
-    font-family: "Courier New", Courier, monospace;
-    background-color: #f0f0f0;
-    color: #000;
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
 }
 
 .game-container {
-    max-width: 800px;
-    margin: 0 auto;
     text-align: center;
-    border: 2px solid #000;
-    padding: 20px;
-    background-color: #fff;
 }
 
-.title {
-    font-size: 2em;
+.game-info {
     margin-bottom: 20px;
-    text-decoration: underline;
+    font-size: 24px;
 }
 
-.instruction {
-    background-color: #e0e0e0;
-    padding: 10px;
-    border: 1px solid #000;
-    margin: 20px 0;
-    font-size: 1.2em;
+.score, .timer {
+    margin: 10px 0;
 }
 
-.controls {
-    margin: 20px 0;
-}
-
-.btn {
-    background-color: #c0c0c0;
-    border: 2px solid #000;
-    padding: 10px 20px;
-    font-size: 1em;
+#game-area {
+    width: 600px;
+    height: 400px;
+    background-color: white;
+    border: 2px solid #333;
+    position: relative;
     cursor: pointer;
-    margin: 0 5px;
+    margin-bottom: 20px;
 }
 
-.btn:hover {
-    background-color: #a0a0a0;
+#target {
+    width: 50px;
+    height: 50px;
+    background-color: #ff4444;
+    border-radius: 50%;
+    position: absolute;
+    display: none;
+    transition: background-color 0.1s;
 }
 
-.score {
-    font-size: 1em;
-    margin: 20px 0;
-    border: 1px solid #000;
-    padding: 10px;
-    background-color: #e0e0e0;
+#target:hover {
+    background-color: #ff6666;
+}
+
+#start-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#start-button:hover {
+    background-color: #45a049;
 }
