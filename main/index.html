@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF.js Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .controls {
+            margin: 10px 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 80px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .page-info {
+            margin: 0 10px;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+        .download {
+            margin: 10px 0;
+            text-align: center;
+        }
+        .download a {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .download a:hover {
+            background-color: #218838;
+        }
+        .message {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        
+        /* スマホ対応 */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            button {
+                padding: 12px 20px;
+                font-size: 18px;
+                min-width: 100px;
+            }
+            .page-info {
+                font-size: 18px;
+                margin: 10px 0;
+                width: 100%;
+                text-align: center;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            .download a {
+                padding: 15px 25px;
+                font-size: 18px;
+            }
+            .message {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="message">お待ちの間に資料をご覧ください。</div>
+    <div class="download">
+        <a href="./teppou.pdf" download="teppou.pdf">PDFをダウンロード</a>
+    </div>
+    <div class="controls">
+        <button id="prev">前のページ</button>
+        <div class="page-info">
+            ページ: <span id="page_num">1</span> / <span id="page_count">-</span>
+        </div>
+        <button id="next">次のページ</button>
+    </div>
+    
+    <canvas id="pdf-canvas"></canvas>
+    
+
+    <script>
+        // PDF.jsの初期化
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.5;
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // スマホ判定とスケール調整
+        function isSmartPhone() {
+            return navigator.userAgent.match(/iPhone|Android.+Mobile/);
+        }
+        
+        // 画面サイズに応じてスケールを調整
+        function getOptimalScale() {
+            if (isSmartPhone()) {
+                return window.innerWidth < 400 ? 0.8 : 1.0;
+            }
+            return 1.5;
+        }
+        
+        // PDFページを描画する関数
+        function renderPage(num) {
+            pageRendering = true;
+            
+            pdfDoc.getPage(num).then(function(page) {
+                scale = getOptimalScale();
+                const viewport = page.getViewport({ scale: scale });
+                
+                // キャンバスサイズを調整
+                const maxWidth = window.innerWidth - 20;
+                if (viewport.width > maxWidth) {
+                    scale = (maxWidth / viewport.width) * scale;
+                    const newViewport = page.getViewport({ scale: scale });
+                    canvas.height = newViewport.height;
+                    canvas.width = newViewport.width;
+                } else {
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                }
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: page.getViewport({ scale: scale })
+                };
+                
+                const renderTask = page.render(renderContext);
+                
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                    updateButtons();
+                });
+            });
+            
+            document.getElementById('page_num').textContent = num;
+        }
+        
+        // ボタンの状態を更新
+        function updateButtons() {
+            const prevBtn = document.getElementById('prev');
+            const nextBtn = document.getElementById('next');
+            
+            prevBtn.disabled = pageNum <= 1;
+            nextBtn.disabled = pageNum >= pdfDoc.numPages;
+        }
+        
+        // ページ移動の待機列
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+        
+        // 前のページ
+        function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+        document.getElementById('prev').addEventListener('click', onPrevPage);
+        
+        // 次のページ
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+        document.getElementById('next').addEventListener('click', onNextPage);
+        
+        // タッチ操作でのページ送り
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        canvas.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        canvas.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // 左にスワイプ（次のページ）
+                    onNextPage();
+                } else {
+                    // 右にスワイプ（前のページ）
+                    onPrevPage();
+                }
+            }
+        }
+        
+        // 画面回転時の再描画
+        window.addEventListener('orientationchange', function() {
+            setTimeout(function() {
+                if (pdfDoc) {
+                    renderPage(pageNum);
+                }
+            }, 500);
+        });
+        
+        // PDFを読み込み
+        pdfjsLib.getDocument('./teppou.pdf').promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+            
+            // 最初のページを表示
+            renderPage(pageNum);
+        }).catch(function(error) {
+            console.error('PDFの読み込みに失敗しました:', error);
+            alert('PDFファイルの読み込みに失敗しました。ファイルが存在するか確認してください。');
+        });
+    </script>
+</body>
+</html>
