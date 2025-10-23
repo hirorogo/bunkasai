@@ -3,23 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二人プレイ ツイスターゲーム</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PDF.js Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        button {
+            margin: 0 5px;
+            padding: 5px 10px;
+        }
+        .download {
+            margin: 10px 0;
+        }
+        .download a {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .download a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1 class="title">二人プレイ ツイスターゲーム</h1>
-        <div class="instruction" id="instruction">
-            スタートボタンを押してゲームを開始！
-        </div>
-        <div class="score">
-            プレイヤー1スコア: <span id="score1">0</span> | プレイヤー2スコア: <span id="score2">0</span>
-        </div>
-        <div class="controls">
-            <button class="btn" id="startBtn">ゲーム開始</button>
-            <button class="btn" id="resetBtn">リセット</button>
-        </div>
+    <div>お待ちの間に資料をご覧ください。</div>
+    <div class="download">
+        <a href="./teppou.pdf" download="teppou.pdf">PDFをダウンロード</a>
     </div>
-    <script src="main.js"></script>
+    <div class="controls">
+        <button id="prev">前のページ</button>
+        <span>ページ: <span id="page_num">1</span> / <span id="page_count">-</span></span>
+        <button id="next">次のページ</button>
+    </div>
+    
+    <canvas id="pdf-canvas"></canvas>
+    
+
+    <script>
+        // PDF.jsの初期化
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        const scale = 1.5;
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // PDFページを描画する関数
+        function renderPage(num) {
+            pageRendering = true;
+            
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                
+                const renderTask = page.render(renderContext);
+                
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+            
+            document.getElementById('page_num').textContent = num;
+        }
+        
+        // ページ移動の待機列
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+        
+        // 前のページ
+        function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+        document.getElementById('prev').addEventListener('click', onPrevPage);
+        
+        // 次のページ
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+        document.getElementById('next').addEventListener('click', onNextPage);
+        
+        // PDFを読み込み
+        pdfjsLib.getDocument('./teppou.pdf').promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+            
+            // 最初のページを表示
+            renderPage(pageNum);
+        }).catch(function(error) {
+            console.error('PDFの読み込みに失敗しました:', error);
+            alert('PDFファイルの読み込みに失敗しました。ファイルが存在するか確認してください。');
+        });
+    </script>
 </body>
 </html>
