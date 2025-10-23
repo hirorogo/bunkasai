@@ -10,22 +10,103 @@
             margin: 0;
             padding: 10px;
             font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
         }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .pdf-viewer {
+            width: 100%;
+            min-height: 600px;
+            border: none;
+            background-color: #fff;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
         canvas {
             border: 1px solid #ccc;
             margin: 10px 0;
             max-width: 100%;
             height: auto;
             display: block;
+            margin: 0 auto;
         }
+        
         .controls {
-            margin: 10px 0;
+            padding: 20px;
             text-align: center;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
         }
+        
+        .download-btn {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        
+        .view-btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .view-btn:hover {
+            background-color: #0056b3;
+        }
+        
         button {
             margin: 5px;
             padding: 10px 15px;
@@ -37,86 +118,148 @@
             cursor: pointer;
             min-width: 80px;
         }
+        
         button:hover {
             background-color: #0056b3;
         }
+        
         button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
+        
         .page-info {
             margin: 0 10px;
             font-size: 16px;
             white-space: nowrap;
         }
-        .download {
-            margin: 10px 0;
+        
+        .info-box {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px;
             text-align: center;
-        }
-        .download a {
-            display: inline-block;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .download a:hover {
-            background-color: #218838;
-        }
-        .message {
-            text-align: center;
-            margin: 10px 0;
-            font-size: 16px;
         }
         
-        /* スマホ対応 */
+        .info-box p {
+            margin: 5px 0;
+            color: #0066cc;
+        }
+        
+        /* スマートフォン対応 */
         @media (max-width: 768px) {
             body {
                 padding: 5px;
             }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .pdf-viewer {
+                min-height: 400px;
+            }
+            
+            .download-btn,
+            .view-btn {
+                padding: 12px 20px;
+                font-size: 16px;
+                display: block;
+                margin: 10px auto;
+                width: 200px;
+            }
+            
+            .controls {
+                padding: 15px;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .page-info {
+                font-size: 16px;
+                margin: 0 10px;
+                white-space: nowrap;
+            }
+            
             button {
                 padding: 12px 20px;
-                font-size: 18px;
-                min-width: 100px;
+                font-size: 16px;
+                min-width: 80px;
             }
-            .page-info {
-                font-size: 18px;
-                margin: 10px 0;
-                width: 100%;
-                text-align: center;
-            }
-            .controls {
-                flex-direction: column;
-            }
-            .download a {
-                padding: 15px 25px;
-                font-size: 18px;
-            }
+            
             .message {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
                 font-size: 18px;
+            }
+            
+            .pdf-viewer {
+                min-height: 300px;
+            }
+            
+            .download-btn,
+            .view-btn {
+                width: 90%;
+                max-width: 250px;
+            }
+            
+            .controls {
+                padding: 15px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .page-info {
+                font-size: 14px;
+                margin: 0 5px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+                min-width: 70px;
+                flex-shrink: 0;
             }
         }
     </style>
 </head>
 <body>
-    <div class="message">お待ちの間に資料をご覧ください。</div>
-    <canvas id="pdf-canvas"></canvas>
-    <div class="download">
-        <a href="./teppou.pdf" download="teppou.pdf">PDFをダウンロード</a>
-    </div>
-    <div class="controls">
-        <button id="prev">前のページ</button>
-        <div class="page-info">
-            ページ: <span id="page_num">1</span> / <span id="page_count">-</span>
+    <div class="container">
+        <div class="header">
+            <h1>103 射的の里</h1>
         </div>
-        <button id="next">次のページ</button>
+        
+        <div class="info-box">
+            <p>お待ちの間に資料をご覧ください。</p>
+            <a href="./teppou.pdf" download="teppou.pdf" class="download-btn">PDFをダウンロード</a>
+        </div>
+        
+        <div class="pdf-viewer">
+            <canvas id="pdf-canvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button id="prev">前のページ</button>
+            <div class="page-info">
+                ページ: <span id="page_num">1</span> / <span id="page_count">-</span>
+            </div>
+            <button id="next">次のページ</button>
+        </div>
     </div>
-    
-    
 
     <script>
         // PDF.jsの初期化
@@ -152,7 +295,7 @@
                 const viewport = page.getViewport({ scale: scale });
                 
                 // キャンバスサイズを調整
-                const maxWidth = window.innerWidth - 20;
+                const maxWidth = window.innerWidth < 800 ? window.innerWidth - 40 : 760;
                 if (viewport.width > maxWidth) {
                     scale = (maxWidth / viewport.width) * scale;
                     const newViewport = page.getViewport({ scale: scale });
