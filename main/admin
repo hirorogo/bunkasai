@@ -1,0 +1,9 @@
+<!DOCTYPE html> //HTML5の宣言
+<html lang="ja"> //このHTMLは日本語で書いていることを明示
+<head>
+<meta charset="utf-8"> //文字エンコーディング指定
+<title></title> //ブラウザのタブなどに表示するタイトル
+</head>
+<body>
+</body>
+</html>
